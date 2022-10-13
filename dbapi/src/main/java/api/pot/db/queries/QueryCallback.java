@@ -8,6 +8,21 @@ import api.pot.db.xitem.XItem;
 
 public class QueryCallback implements QueryListener{
     @Override
+    public void onQueryStart() {
+
+    }
+
+    @Override
+    public void onQueryError() {
+
+    }
+
+    @Override
+    public void onQueryEnd() {
+
+    }
+
+    @Override
     public void onQueryStart(boolean started, String msg) {
 
     }

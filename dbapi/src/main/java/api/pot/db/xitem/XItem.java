@@ -25,6 +25,16 @@ public class XItem {
     protected List<Field> tFields = new ArrayList<>();
     protected ContentValues iValues = new ContentValues();
 
+    protected int iFieldId = 0;
+
+    public int getiFieldId() {
+        return iFieldId;
+    }
+
+    public void setiFieldId(int iFieldId) {
+        this.iFieldId = iFieldId;
+    }
+
     public void setItemListener(ItemListener itemListener) {
         this.itemListeners.add(itemListener);
     }
@@ -67,6 +77,7 @@ public class XItem {
     }
 
     private void insert(int field, Object value){
+        if(value==null) return;
         if(value instanceof Integer) this.iValues.put(tFields.get(field).name, (Integer)value);
         else if(value instanceof Float) this.iValues.put(tFields.get(field).name, (Float) value);
         else this.iValues.put(tFields.get(field).name, value.toString());
@@ -90,13 +101,22 @@ public class XItem {
     }
 
     public Object getValue(int field) {
-        return iValues.get(tFields.get(field).name);
+        Object val;
+        try {
+            val = iValues.get(tFields.get(field).name);
+            return val!=null?val:new String();
+        }catch (Exception e){}
+        return new String();
     }
 
     public void setValue(int field, Object value) {
         insert(field, value);
         //iTable.update(0, (Integer) getValue(0), this);
         onItemChange(field, value);
+    }
+
+    public void update(int iField, Object data) {
+        iTable.update(this, iField, data);
     }
 
     @Override

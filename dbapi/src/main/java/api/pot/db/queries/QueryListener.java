@@ -8,6 +8,9 @@ import api.pot.db.xitem.XItem;
 
 public interface QueryListener {
 
+    void onQueryStart();
+    void onQueryError();
+    void onQueryEnd();
     void onQueryStart(boolean started, String msg);
     void onQueryProgress(float evolution);
     void onQueryEnd(Cursor cursor, String msg);

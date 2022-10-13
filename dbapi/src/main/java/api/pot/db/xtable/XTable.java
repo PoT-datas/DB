@@ -106,6 +106,19 @@ public class XTable {
         return super.equals(obj);
     }
 
+    public void update(XItem item, int iField, Object data) {
+        if(item.getValue(item.getiFieldId())==null) return;
+        item.setValue(iField, data);
+        update((Integer) item.getValue(item.getiFieldId()), item);
+    }
+
+    public void update(Integer id, XItem item) {
+        FX.update(item)
+                .from(this)
+                .where(FX.equal(item.getiFieldId(), id+""))
+                .build(tDB);
+    }
+
     /*public void update(int idNbr, Integer id, XItem item) {
         FX.update(item)
                 .from(this)
