@@ -3,6 +3,7 @@ package api.pot.db.xtable;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,10 @@ public class XTable {
         tDB.setTable(this);
     }
 
+    public XDB gettDB() {
+        return tDB;
+    }
+
     public String getName() {
         return tName;
     }
@@ -44,7 +49,10 @@ public class XTable {
     }
 
     public Field getField(int i) {
-        if(i>tFields.size()) return null;
+        if(i>tFields.size()) {
+            Log.d("TGPS", "http://DELETING..."+i+"|"+tFields.size());
+            return null;
+        }
         return tFields.get(i);
     }
 
@@ -88,7 +96,7 @@ public class XTable {
         for (my_cursor.moveToFirst();!my_cursor.isAfterLast();my_cursor.moveToNext()){
             column_tName = my_cursor.getString(my_cursor.getColumnIndex("tName"));
             column_type = my_cursor.getString(my_cursor.getColumnIndex("type"));
-            tFields.add(new Field(column_tName, FType.getType(column_type)));
+            tFields.add(new Field(column_tName, FType.fromString(column_type)));
         }
     }
 

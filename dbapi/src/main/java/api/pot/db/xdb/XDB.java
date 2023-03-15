@@ -41,6 +41,16 @@ public class XDB  extends SQLiteOpenHelper {
         return new XDB(dbContext, name, null, db.getVersion()!=0?db.getVersion():1);
     }
 
+    //se connecter à la plus recente version d'une db
+    public static XDB connect(@Nullable Context context, @Nullable String name, int version){
+        return connect(new DBContext(context), name, version);
+    }
+
+    //se connecter à la plus recente version d'une db
+    public static XDB connect(@Nullable DBContext dbContext, @Nullable String name, int version){
+        return new XDB(dbContext, name, null, version);
+    }
+
     //se connecter à une db précise
     public XDB(@Nullable Context context, @Nullable String name, SQLiteDatabase.CursorFactory factory, int version) {
         this(new DBContext(context), name, factory, version);
@@ -107,6 +117,8 @@ public class XDB  extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         if (oldVersion != newVersion) {
+            ///close();
+            ///---context.deleteDatabase(getDatabaseName());
             // Simplest implementation is to drop all old tables and recreate them
             //db.execSQL("DROP TABLE IF EXISTS " + TABLE_POSTS);
             onCreate(sqLiteDatabase);

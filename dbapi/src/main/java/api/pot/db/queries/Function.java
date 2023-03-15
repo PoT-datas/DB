@@ -301,6 +301,14 @@ public class Function {
                 script.append(functions.get(1).toScript()+"");
                 return script.toString();
             }
+            case FX.NOT_LIKE : {
+                if(functions.size()==0) return null;
+                script.append(functions.get(0).toScript()+"");
+                script.replace(script.length()-1, script.length(), "");
+                script.append(" "+FX.NOT_LIKE+" ");
+                script.append(functions.get(1).toScript()+"");
+                return script.toString();
+            }
             case FX.AND : {
                 if(functions.size()==0) return null;
                 script.append(functions.get(0).toScript()+"");

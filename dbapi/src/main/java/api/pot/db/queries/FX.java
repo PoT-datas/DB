@@ -47,6 +47,7 @@ public class FX {
     public static final String XINF = "XINF";
     public static final String BETWEEN = "BETWEEN";
     public static final String LIKE = "LIKE";
+    public static final String NOT_LIKE = "NOT LIKE";
     public static final String IN = "IN";
     public static final String NOT_IN = "NOT_IN";
     public static final String IS_NULL = "IS NULL";
@@ -280,6 +281,18 @@ public class FX {
         return new Function(FX.LIKE, functions);
     }
 
+    public static Function notLike(int... fields){
+        return notLike(new Function(FX.ELEMENT, fields));
+    }
+
+    public static Function notLike(int field, String value){
+        return notLike(new Function(FX.ELEMENT, field), new Function(FX.ELEMENT, value));
+    }
+
+    public static Function notLike(Function... functions){
+        return new Function(FX.NOT_LIKE, functions);
+    }
+
     public static Function in(int... fields){
         return in(new Function(FX.ELEMENT, fields));
     }
@@ -382,7 +395,7 @@ public class FX {
     }
 
     private StringBuilder script;
-    public String building(XDB xdb){
+    /*public String building(XDB xdb){
         if(functions==null || functions.size()==0) return null;
         //
         for(Function function : functions)
@@ -455,7 +468,7 @@ public class FX {
             }
         }
         return script.toString();
-    }
+    }*/
 
     private Function getFunction(String name) {
         for(Function function : functions)
@@ -512,8 +525,11 @@ public class FX {
             }
             XDB xdb = params[0];
             //
-            for(Function function : functions)
-                function.into(functions.get(1).tables.get(0));
+            /**for(Function function : functions)
+                function.into(functions.get(1).tables.get(0));*/
+            for(int k=0;k<functions.size();k++){
+                functions.get(k).into(functions.get(1).tables.get(0));
+            }
             //
             script = new StringBuilder();
             //
@@ -554,6 +570,7 @@ public class FX {
                             }
                         }
                     }catch (Exception e){
+                        if(queryCallback!=null) queryCallback.onQueryError(e.getMessage());
                         if(queryCallback!=null) queryCallback.onQueryEnd(null, e.getMessage());
                         return null;
                     }
@@ -584,7 +601,7 @@ public class FX {
                                 "SET " + valuesToString(functions.get(0).items.get(0).getValues()) +" \n"+
                                 functions.get(2).toScript() +" \n"
                         );
-                        if(queryCallback!=null) queryCallback.onQueryEnd(null, "UPDATE sucess!!!");
+                        if(queryCallback!=null) queryCallback.onQueryEnd(null, null/*"UPDATE sucess!!!"*/);
                     }catch (Exception e){
                         if(queryCallback!=null) queryCallback.onQueryEnd(null, e.getMessage());
                         return null;
@@ -597,13 +614,9 @@ public class FX {
                                 functions.get(1).tables.size()==0) return null;
                         xdb.getDb().execSQL("DELETE FROM "+functions.get(1).tables.get(0).getName() +" \n"+
                                 functions.get(2).toScript() +" \n");
-                        script.append("done ::: "+
-                                "DELETE FROM "+functions.get(1).tables.get(0).getName() +" \n"+
-                                functions.get(2).toScript() +" \n"
-                        );
+                        script.append("done ::: ");
                         if(queryCallback!=null) queryCallback.onQueryEnd(null, "DELETE sucess!!!");
                     }catch (Exception e){
-                        Log.d("TGPS", "http://"+e.getMessage());
                         if(queryCallback!=null) queryCallback.onQueryEnd(null, e.getMessage());
                         return null;
                     }

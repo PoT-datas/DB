@@ -12,6 +12,7 @@ import api.pot.db.xtable.XTable;
 
 import static api.pot.db.xtable.FType.FLOAT;
 import static api.pot.db.xtable.FType.INTEGER;
+import static java.lang.Enum.valueOf;
 
 public class XItem {
     // Ex: Les listener doivent pouvoir fonctionner avec tout acces à un item. Instance different
@@ -65,6 +66,42 @@ public class XItem {
     }
 
     public XItem(XTable table, Cursor cursor) {
+        /*this.iTable = table;
+        if(table!=null) this.tFields = table.getFields();
+        int i=0;
+        for (Field field : tFields){
+            switch (field.type){
+                case INTEGER:
+                    this.iValues.put(field.name, cursor.getInt(i));
+                    break;
+                case LONG:
+                    this.iValues.put(field.name, cursor.getLong(i));
+                    break;
+                case FLOAT:
+                    this.iValues.put(field.name, cursor.getFloat(i));
+                    break;
+                case DOUBLE:
+                    this.iValues.put(field.name, cursor.getDouble(i));
+                    break;
+                case TEXT:
+                    this.iValues.put(field.name, cursor.getString(i));
+                    break;
+                case DATE:
+                    this.iValues.put(field.name, cursor.getString(i));
+                    break;
+                case TIME:
+                    this.iValues.put(field.name, cursor.getString(i));
+                    break;
+                case DATETIME:
+                    this.iValues.put(field.name, cursor.getString(i));
+                    break;
+                case NONE:
+                    this.iValues.put(field.name, cursor.getString(i));
+                    break;
+            }
+            i++;
+        }*/
+
         this.iTable = table;
         if(table!=null) this.tFields = table.getFields();
         int i=0;
@@ -74,13 +111,61 @@ public class XItem {
             else iValues.put(field.name, cursor.getString(i));
             i++;
         }
+
     }
 
-    private void insert(int field, Object value){
+    private void insert(int iField, Object value){
+        /*if(!(tFields!=null && tFields.size()>iField && value!=null)) return;
+        Field field = tFields.get(iField);
+        switch (field.type){
+            case INTEGER:
+                this.iValues.put(field.name, (int)(value));
+                break;
+            case LONG:
+                this.iValues.put(field.name, (long)(value));
+                break;
+            case FLOAT:
+                this.iValues.put(field.name, (float)(value));
+                break;
+            case DOUBLE:
+                this.iValues.put(field.name, (double)(value));
+                break;
+            case TEXT:
+                this.iValues.put(field.name, value.toString());
+                break;
+            case DATE:
+                this.iValues.put(field.name, value.toString());
+                break;
+            case TIME:
+                this.iValues.put(field.name, value.toString());
+                break;
+            case DATETIME:
+                this.iValues.put(field.name, value.toString());
+                break;
+            case NONE:
+                this.iValues.put(field.name, value.toString());
+                break;
+        }*/
+
+        /*if(value==null) return;
+        if(value instanceof Integer) this.iValues.put(tFields.get(iField).name, (Integer)value);
+        else if(value instanceof Float) this.iValues.put(tFields.get(iField).name, (Float) value);
+        else this.iValues.put(tFields.get(iField).name, value.toString());*/
+
         if(value==null) return;
-        if(value instanceof Integer) this.iValues.put(tFields.get(field).name, (Integer)value);
-        else if(value instanceof Float) this.iValues.put(tFields.get(field).name, (Float) value);
-        else this.iValues.put(tFields.get(field).name, value.toString());
+        if(value instanceof Integer) this.iValues.put(tFields.get(iField).name, (Integer)value);
+        else if(value instanceof Float) this.iValues.put(tFields.get(iField).name, (Float) value);
+        else this.iValues.put(tFields.get(iField).name, normalyze(value, true).toString());
+
+    }
+
+    private Object normalyze(Object data, boolean encoding) {
+        String ret;
+        String str  = data+"";
+        String bigReplacer = "¤°¤";
+        if(encoding) ret = str.replaceAll(bigReplacer, "").replaceAll("'", bigReplacer);
+        else ret = str.replaceAll(bigReplacer, "'");
+        return ret;
     }
 
     public XTable getTable() {
@@ -96,7 +181,7 @@ public class XItem {
         return iValues;
     }
 
-    public void setValues(ContentValues iValues) {
+    public void setValues(ContentValues iValues) {///have to be normalyze
         this.iValues = iValues;
     }
 
@@ -104,7 +189,7 @@ public class XItem {
         Object val;
         try {
             val = iValues.get(tFields.get(field).name);
-            return val!=null?val:new String();
+            return val!=null?((iTable.getField(field).type!=INTEGER&&iTable.getField(field).type!=FLOAT)?normalyze(val, false):val):new String();
         }catch (Exception e){}
         return new String();
     }
@@ -119,8 +204,7 @@ public class XItem {
         iTable.update(this, iField, data);
     }
 
-    @Override
-    public String toString() {
+    public String describe() {
         StringBuilder sb = new StringBuilder();
         for(Map.Entry<String, Object> value : iValues.valueSet()){
             sb.append(value.getKey()+":"+value.getValue()+"/");

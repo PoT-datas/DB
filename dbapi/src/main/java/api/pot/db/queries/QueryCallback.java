@@ -38,6 +38,16 @@ public class QueryCallback implements QueryListener{
     }
 
     @Override
+    public void onQueryEnd(String msg) {
+
+    }
+
+    @Override
+    public void onQueryError(String msg) {
+
+    }
+
+    @Override
     public void onResultParsed(XItem item, String msg) {
 
     }
